@@ -258,7 +258,7 @@ def makePom(node, artifactId, osArches, theVersion, theBaseline) {
 }
 
 project.group = "com.jyuzawa"
-def REPO = "yuzawa-san/onnxruntime-java"
+def REPO = project.findProperty("repo") ?: "jyuzawa/onnxruntime-java"
 
 nexusPublishing {
 	repositories {
@@ -272,6 +272,16 @@ nexusPublishing {
 }
 
 publishing {
+	repositories {
+		maven {
+			name = "GitHubPackages"
+			url = uri("https://maven.pkg.github.com/${REPO}")
+			credentials {
+				username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR")
+				password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
+			}
+		}
+	}
 	publications {
 		onnxruntimeCpu(MavenPublication) {
 			version = ORT_JAR_VERSION
